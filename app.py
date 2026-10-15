@@ -137,12 +137,33 @@ if st.button("Check Job Posting"):
         text_vector = vectorizer.transform([job_text])
         prediction = model.predict(text_vector)[0]
 
-        st.subheader("Prediction Result")
+        st.subheader("🔎 Prediction Result")
 
-        if int(prediction) == 1:
-            st.error("⚠️ Potentially Fake Job Posting")
-        else:
-            st.success("✅ Likely Genuine Job Posting")
+if int(prediction) == 1:
+    st.markdown("""
+    <div style="background-color:#FFF0F0; padding:22px;
+                border-left:6px solid #DC2626; border-radius:12px;">
+        <h2 style="color:#B91C1C; margin:0;">
+            ⚠️ Potentially Fake Job Posting
+        </h2>
+        <p style="color:#7F1D1D; margin-top:10px;">
+            Warning signs detected. Verify the employer before proceeding.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+    <div style="background-color:#ECFDF5; padding:22px;
+                border-left:6px solid #16A34A; border-radius:12px;">
+        <h2 style="color:#166534; margin:0;">
+            ✅ Likely Genuine Job Posting
+        </h2>
+        <p style="color:#166534; margin-top:10px;">
+            The model classified this posting as likely genuine.
+            Always verify the employer independently.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
         st.subheader("Why should you check this job?")
 
