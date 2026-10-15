@@ -14,75 +14,192 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    .stApp {
-        background-color: #f4f7fb;
-    }
 
+/* Main Background */
+.stApp {
+    background-color: #F4F7FB !important;
+}
+
+/* Main Text Visibility */
+.stApp,
+.stApp p,
+.stApp label,
+.stApp span,
+.stApp div,
+.stApp li {
+    color: #172B4D;
+}
+
+/* Main Heading */
+.main-title {
+    background: linear-gradient(120deg, #123C69, #2471A3);
+    padding: 28px 18px;
+    border-radius: 16px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.main-title h1 {
+    color: #FFFFFF !important;
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.main-title p {
+    color: #FFFFFF !important;
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+/* All Section Headings */
+h1, h2, h3, h4 {
+    color: #123C69 !important;
+    font-weight: bold !important;
+}
+
+/* Dashboard Metric Cards */
+div[data-testid="stMetric"] {
+    background-color: #FFFFFF !important;
+    border: 1px solid #D6E4F0;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Dashboard Labels and Values */
+div[data-testid="stMetric"] label,
+div[data-testid="stMetric"] label *,
+div[data-testid="stMetricValue"],
+div[data-testid="stMetricValue"] *,
+div[data-testid="stMetricLabel"],
+div[data-testid="stMetricLabel"] *,
+div[data-testid="stMetricDelta"],
+div[data-testid="stMetricDelta"] * {
+    color: #123C69 !important;
+}
+
+/* Input Fields */
+.stTextInput input,
+.stTextArea textarea,
+.stNumberInput input {
+    background-color: #FFFFFF !important;
+    color: #172B4D !important;
+    border: 1px solid #AABED0 !important;
+    border-radius: 8px !important;
+    caret-color: #123C69 !important;
+}
+
+/* Input Placeholder */
+.stTextInput input::placeholder,
+.stTextArea textarea::placeholder {
+    color: #66788A !important;
+    opacity: 1 !important;
+}
+
+/* Input Focus */
+.stTextInput input:focus,
+.stTextArea textarea:focus,
+.stNumberInput input:focus {
+    border: 2px solid #2471A3 !important;
+    box-shadow: 0 0 4px rgba(36, 113, 163, 0.25);
+}
+
+/* Buttons */
+.stButton > button {
+    background-color: #1F618D !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 9px !important;
+    padding: 10px 20px !important;
+    font-weight: bold !important;
+}
+
+/* Button Text */
+.stButton > button p,
+.stButton > button span {
+    color: #FFFFFF !important;
+}
+
+/* Button Hover */
+.stButton > button:hover {
+    background-color: #154360 !important;
+    border: 1px solid #154360 !important;
+}
+
+/* Download Button */
+.stDownloadButton > button {
+    background-color: #117864 !important;
+    color: #FFFFFF !important;
+    border-radius: 9px !important;
+    border: none !important;
+}
+
+.stDownloadButton > button p,
+.stDownloadButton > button span {
+    color: #FFFFFF !important;
+}
+
+/* File Uploader */
+div[data-testid="stFileUploader"] {
+    background-color: #FFFFFF !important;
+    border: 1px solid #D6E4F0;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+/* File Uploader Text */
+div[data-testid="stFileUploader"] * {
+    color: #172B4D;
+}
+
+/* Dataframe */
+div[data-testid="stDataFrame"] {
+    background-color: #FFFFFF !important;
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab"] {
+    color: #123C69 !important;
+}
+
+/* Dividers */
+hr {
+    border-color: #C8D8E8 !important;
+}
+
+/* Alerts */
+div[data-testid="stAlert"] p {
+    color: #172B4D !important;
+}
+
+/* Footer */
+.footer-text {
+    color: #52677D !important;
+    text-align: center;
+    font-size: 13px;
+    padding: 12px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
     .main-title {
-        background: linear-gradient(90deg, #123c69, #2471a3);
-        padding: 25px;
-        border-radius: 15px;
-        color: white;
-        text-align: center;
-        margin-bottom: 10px;
+        padding: 20px 12px;
     }
 
     .main-title h1 {
-        color: white;
-        font-size: 30px;
+        font-size: 23px;
     }
 
     .main-title p {
-        color: #eaf2f8;
-        font-size: 16px;
-    }
-
-    .section-title {
-        color: #123c69;
-        font-weight: bold;
+        font-size: 14px;
     }
 
     div[data-testid="stMetric"] {
-        background-color: white;
-        border: 1px solid #d6e4f0;
-        padding: 18px;
-        border-radius: 12px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        padding: 10px;
     }
+}
 
-    div.stButton > button {
-        background-color: #1f618d;
-        color: white;
-        border-radius: 8px;
-        border: none;
-        padding: 10px 20px;
-        font-weight: bold;
-    }
-
-    div.stButton > button:hover {
-        background-color: #154360;
-        color: white;
-    }
-
-    div[data-testid="stFileUploader"] {
-        background-color: white;
-        padding: 15px;
-        border-radius: 10px;
-    }
-
-    h2, h3 {
-        color: #123c69;
-    }
-
-    @media (max-width: 768px) {
-        .main-title h1 {
-            font-size: 23px;
-        }
-
-        .main-title p {
-            font-size: 14px;
-        }
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -100,9 +217,6 @@ st.markdown("""
 
 
 # ---------------- DASHBOARD POSITION ----------------
-
-# Dashboard heading tarvatha display avuthundi.
-# Migatha sections dashboard kindha untayi.
 
 dashboard_slot = st.empty()
 
@@ -125,23 +239,19 @@ if "genuine_jobs" not in st.session_state:
 def load_models():
     model = joblib.load("fake_job_model (1).pkl")
     vectorizer = joblib.load("tfidf_vectorizer.pkl")
-
     return model, vectorizer
 
 
 try:
     model, vectorizer = load_models()
-
     st.success("Detection model loaded successfully!")
 
 except Exception as e:
     st.error(f"Model loading failed: {e}")
-
     st.info(
         "Check whether both model files are available "
         "in your GitHub repository."
     )
-
     st.stop()
 
 
@@ -178,14 +288,11 @@ def get_reasons(title, company, description, requirements):
     ]
 
     combined_text = (
-        title + " " +
-        company + " " +
-        description + " " +
-        requirements
+        title + " " + company + " " +
+        description + " " + requirements
     ).lower()
 
     for phrase in warning_phrases:
-
         if phrase in combined_text:
             reasons.append(
                 f"The posting mentions '{phrase}'. "
@@ -205,38 +312,27 @@ def get_reasons(title, company, description, requirements):
 
 # ---------------- DASHBOARD ----------------
 
-with dashboard_slot.container():
+def show_dashboard():
 
-    st.subheader("📊 Job Detection Dashboard")
+    with dashboard_slot.container():
 
-    col1, col2, col3, col4 = st.columns(4)
+        st.subheader("📊 Job Detection Dashboard")
 
-    fake_rate = (
-        st.session_state.fake_jobs
-        / st.session_state.total_jobs * 100
-        if st.session_state.total_jobs > 0
-        else 0
-    )
+        col1, col2, col3, col4 = st.columns(4)
 
-    col1.metric(
-        "Total Jobs Analysed",
-        st.session_state.total_jobs
-    )
+        total = st.session_state.total_jobs
+        fake = st.session_state.fake_jobs
+        genuine = st.session_state.genuine_jobs
 
-    col2.metric(
-        "Fake Jobs",
-        st.session_state.fake_jobs
-    )
+        rate = fake / total * 100 if total > 0 else 0
 
-    col3.metric(
-        "Genuine Jobs",
-        st.session_state.genuine_jobs
-    )
+        col1.metric("Total Jobs Analysed", total)
+        col2.metric("Fake Jobs", fake)
+        col3.metric("Genuine Jobs", genuine)
+        col4.metric("Fake Job Rate", f"{rate:.2f}%")
 
-    col4.metric(
-        "Fake Job Rate",
-        f"{fake_rate:.2f}%"
-    )
+
+show_dashboard()
 
 st.divider()
 
@@ -272,10 +368,8 @@ if st.button("🔍 Check Job Posting"):
     else:
 
         job_text = (
-            title + " " +
-            company_profile + " " +
-            description + " " +
-            requirements
+            title + " " + company_profile + " " +
+            description + " " + requirements
         )
 
         text_vector = vectorizer.transform([job_text])
@@ -333,33 +427,8 @@ if st.button("🔍 Check Job Posting"):
             "Verify the employer independently."
         )
 
-        # ---------------- REFRESH DASHBOARD ----------------
-
-        with dashboard_slot.container():
-
-            st.subheader("📊 Job Detection Dashboard")
-
-            col1, col2, col3, col4 = st.columns(4)
-
-            total = st.session_state.total_jobs
-
-            fake = st.session_state.fake_jobs
-
-            genuine = st.session_state.genuine_jobs
-
-            rate = (
-                fake / total * 100
-                if total > 0
-                else 0
-            )
-
-            col1.metric("Total Jobs Analysed", total)
-
-            col2.metric("Fake Jobs", fake)
-
-            col3.metric("Genuine Jobs", genuine)
-
-            col4.metric("Fake Job Rate", f"{rate:.2f}%")
+        # Refresh dashboard metrics
+        show_dashboard()
 
 
 st.divider()
@@ -408,10 +477,7 @@ if uploaded_file is not None:
             "requirements"
         ]
 
-        if all(
-            col in data.columns
-            for col in required_columns
-        ):
+        if all(col in data.columns for col in required_columns):
 
             st.subheader("Select Number of Jobs")
 
@@ -430,11 +496,8 @@ if uploaded_file is not None:
                 ).copy()
 
                 for col in required_columns:
-
                     sample[col] = (
-                        sample[col]
-                        .fillna("")
-                        .astype(str)
+                        sample[col].fillna("").astype(str)
                     )
 
                 sample["combined_text"] = (
@@ -451,8 +514,7 @@ if uploaded_file is not None:
                 predictions = model.predict(vectors)
 
                 sample["Prediction"] = [
-                    "Potentially Fake"
-                    if int(p) == 1
+                    "Potentially Fake" if int(p) == 1
                     else "Likely Genuine"
                     for p in predictions
                 ]
@@ -473,14 +535,10 @@ if uploaded_file is not None:
 
                 st.subheader("Prediction Results")
 
-                result_columns = [
-                    "title",
-                    "Prediction",
-                    "Warning Signs"
-                ]
-
                 st.dataframe(
-                    sample[result_columns],
+                    sample[
+                        ["title", "Prediction", "Warning Signs"]
+                    ],
                     use_container_width=True
                 )
 
@@ -488,37 +546,21 @@ if uploaded_file is not None:
 
                 st.subheader("📈 Prediction Summary")
 
-                counts = (
-                    sample["Prediction"]
-                    .value_counts()
-                )
+                counts = sample["Prediction"].value_counts()
 
                 fake_count = int(
-                    (sample["Prediction"] == "Potentially Fake")
-                    .sum()
+                    (sample["Prediction"] == "Potentially Fake").sum()
                 )
 
                 genuine_count = int(
-                    (sample["Prediction"] == "Likely Genuine")
-                    .sum()
+                    (sample["Prediction"] == "Likely Genuine").sum()
                 )
 
                 col1, col2, col3 = st.columns(3)
 
-                col1.metric(
-                    "Jobs Analyzed",
-                    len(sample)
-                )
-
-                col2.metric(
-                    "Potentially Fake",
-                    fake_count
-                )
-
-                col3.metric(
-                    "Likely Genuine",
-                    genuine_count
-                )
+                col1.metric("Jobs Analyzed", len(sample))
+                col2.metric("Potentially Fake", fake_count)
+                col3.metric("Likely Genuine", genuine_count)
 
                 st.bar_chart(counts)
 
@@ -542,10 +584,9 @@ if uploaded_file is not None:
                 )
 
                 st.info(
-                    "CSV predictions are based on the "
-                    "trained Machine Learning model. "
-                    "Warning signs are preliminary checks "
-                    "and do not prove that a job is fraudulent."
+                    "CSV predictions are based on the trained "
+                    "Machine Learning model. Warning signs are "
+                    "preliminary checks and do not prove fraud."
                 )
 
         else:
@@ -558,17 +599,17 @@ if uploaded_file is not None:
 
     except Exception as e:
 
-        st.error(
-            f"Could not process the dataset: {e}"
-        )
+        st.error(f"Could not process the dataset: {e}")
 
 
 # ---------------- FOOTER ----------------
 
 st.divider()
 
-st.caption(
-    "AI-Based Fake Job Detection System | "
-    "Machine Learning Project | "
-    "Always verify job offers independently."
-)
+st.markdown("""
+<div class="footer-text">
+    AI-Based Fake Job Detection System |
+    Machine Learning Project |
+    Always verify job offers independently.
+</div>
+""", unsafe_allow_html=True)
