@@ -1,6 +1,6 @@
 import os
-import re
 import pickle
+import re
 
 import pandas as pd
 import streamlit as st
@@ -18,170 +18,146 @@ st.set_page_config(
 
 
 # ==================================================
-# CUSTOM CSS
+# CSS DESIGN
 # ==================================================
 
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background-color: #F4F7FB;
-        color: #172B4D;
-    }
+st.markdown("""
+<style>
+.stApp {
+    background-color: #F4F7FB;
+    color: #172B4D;
+}
 
-    .block-container {
-        padding-top: 1.5rem;
-        padding-bottom: 2rem;
-    }
+.block-container {
+    padding-top: 1.5rem;
+}
 
-    h1, h2, h3, h4 {
-        color: #123C69 !important;
-    }
+h1, h2, h3 {
+    color: #123C69 !important;
+}
 
-    p, label, li {
-        color: #172B4D;
-    }
+.main-title {
+    background: linear-gradient(90deg, #123C69, #2471A3);
+    padding: 24px;
+    border-radius: 16px;
+    text-align: center;
+    margin-bottom: 20px;
+}
 
-    .main-title {
-        background: linear-gradient(90deg, #123C69, #2471A3);
-        padding: 25px;
-        border-radius: 16px;
-        text-align: center;
-        margin-bottom: 20px;
-    }
+.main-title h1,
+.main-title p {
+    color: white !important;
+}
 
-    .main-title h1,
-    .main-title p {
-        color: white !important;
-    }
+.metric-card {
+    background: white;
+    border: 1px solid #D6E4F0;
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    margin-bottom: 12px;
+}
 
-    .metric-card {
-        background-color: #FFFFFF;
-        border: 1px solid #D6E4F0;
-        border-radius: 12px;
-        padding: 18px;
-        text-align: center;
-        margin-bottom: 12px;
-    }
+.metric-card h3 {
+    font-size: 15px;
+}
 
-    .metric-card h3 {
-        font-size: 15px;
-        margin-bottom: 8px;
-    }
+.metric-card h2 {
+    font-size: 28px;
+    margin: 0;
+}
 
-    .metric-card h2 {
-        font-size: 28px;
-        margin: 0;
-    }
+.section-card {
+    background: white;
+    border: 1px solid #D6E4F0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
 
-    .section-card {
-        background-color: #FFFFFF;
-        border: 1px solid #D6E4F0;
-        border-radius: 14px;
-        padding: 20px;
-        margin-bottom: 18px;
-    }
+.fake-result {
+    background: #FDECEC;
+    border-left: 6px solid #D93025;
+    padding: 18px;
+    border-radius: 10px;
+}
 
-    .fake-result {
-        background-color: #FDECEC;
-        border-left: 6px solid #D93025;
-        padding: 18px;
-        border-radius: 10px;
-        color: #7A1712 !important;
-    }
+.real-result {
+    background: #E8F7EE;
+    border-left: 6px solid #18864B;
+    padding: 18px;
+    border-radius: 10px;
+}
 
-    .real-result {
-        background-color: #E8F7EE;
-        border-left: 6px solid #18864B;
-        padding: 18px;
-        border-radius: 10px;
-        color: #125B35 !important;
-    }
+.info-box {
+    background: #EAF3FC;
+    border-left: 5px solid #2471A3;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
 
-    .info-box {
-        background-color: #EAF3FC;
-        border-left: 5px solid #2471A3;
-        padding: 15px;
-        border-radius: 8px;
-        color: #123C69 !important;
-        margin-bottom: 15px;
-    }
+.warning-box {
+    background: #FFF4DD;
+    border-left: 5px solid #D99A00;
+    padding: 15px;
+    border-radius: 8px;
+}
 
-    .warning-box {
-        background-color: #FFF4DD;
-        border-left: 5px solid #D99A00;
-        padding: 15px;
-        border-radius: 8px;
-        color: #704D00 !important;
-    }
+/* CSV uploader */
 
-    /* CSV uploader background and border */
-    div[data-testid="stFileUploader"] {
-        background-color: #FFFFFF !important;
-        border: 2px solid #2471A3 !important;
-        border-radius: 12px !important;
-        padding: 20px !important;
-    }
+div[data-testid="stFileUploader"] {
+    background-color: #FFFFFF !important;
+    border: 2px solid #2471A3 !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+}
 
-    /* CSV uploader text visibility */
-    div[data-testid="stFileUploader"] label,
-    div[data-testid="stFileUploader"] label *,
-    div[data-testid="stFileUploader"] section,
-    div[data-testid="stFileUploader"] section *,
-    div[data-testid="stFileUploader"] small,
-    div[data-testid="stFileUploader"] span,
-    div[data-testid="stFileUploader"] p {
-        color: #172B4D !important;
-        opacity: 1 !important;
-    }
+div[data-testid="stFileUploader"] label,
+div[data-testid="stFileUploader"] label *,
+div[data-testid="stFileUploader"] section,
+div[data-testid="stFileUploader"] section *,
+div[data-testid="stFileUploader"] small,
+div[data-testid="stFileUploader"] span,
+div[data-testid="stFileUploader"] p {
+    color: #172B4D !important;
+    opacity: 1 !important;
+}
 
-    /* Choose file button */
-    div[data-testid="stFileUploader"] button {
-        background-color: #E8F2FC !important;
-        color: #123C69 !important;
-        border: 1px solid #2471A3 !important;
-        border-radius: 8px !important;
-    }
+div[data-testid="stFileUploader"] button {
+    background-color: #E8F2FC !important;
+    color: #123C69 !important;
+    border: 1px solid #2471A3 !important;
+    border-radius: 8px !important;
+}
 
-    div[data-testid="stFileUploader"] button * {
-        color: #123C69 !important;
-    }
+div[data-testid="stFileUploader"] button * {
+    color: #123C69 !important;
+}
 
-    div[data-testid="stFileUploader"] button:hover {
-        background-color: #D4E6F7 !important;
-    }
+.stButton > button,
+.stDownloadButton > button {
+    background-color: #2471A3 !important;
+    color: white !important;
+    border-radius: 9px;
+    border: none;
+    padding: 10px 16px;
+    font-weight: bold;
+}
 
-    /* Main action buttons */
-    .stButton > button,
-    .stDownloadButton > button {
-        background-color: #2471A3 !important;
-        color: white !important;
-        border-radius: 9px;
-        border: none;
-        padding: 10px 18px;
-        font-weight: bold;
-    }
-
-    .stButton > button:hover,
-    .stDownloadButton > button:hover {
-        background-color: #123C69 !important;
-    }
-
-    .footer {
-        text-align: center;
-        color: #526579;
-        padding: 20px;
-        margin-top: 25px;
-        border-top: 1px solid #D6E4F0;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+.footer {
+    text-align: center;
+    color: #526579;
+    padding: 20px;
+    margin-top: 25px;
+    border-top: 1px solid #D6E4F0;
+}
+</style>
+""", unsafe_allow_html=True)
 
 
 # ==================================================
-# LOAD MODEL AND VECTORIZER
+# LOAD TRAINED MODEL
 # ==================================================
 
 MODEL_PATH = "fake_job_model (1).pkl"
@@ -201,11 +177,11 @@ def load_model_files():
         )
 
     try:
-        with open(MODEL_PATH, "rb") as model_file:
-            loaded_model = pickle.load(model_file)
+        with open(MODEL_PATH, "rb") as file:
+            loaded_model = pickle.load(file)
 
-        with open(VECTORIZER_PATH, "rb") as vectorizer_file:
-            loaded_vectorizer = pickle.load(vectorizer_file)
+        with open(VECTORIZER_PATH, "rb") as file:
+            loaded_vectorizer = pickle.load(file)
 
         return loaded_model, loaded_vectorizer, None
 
@@ -217,7 +193,7 @@ model, vectorizer, model_error = load_model_files()
 
 
 # ==================================================
-# SESSION STATE
+# SESSION COUNTERS
 # ==================================================
 
 if "total_checked" not in st.session_state:
@@ -353,19 +329,24 @@ def detect_warning_reasons(job):
 
     if not reasons:
         reasons.append(
-            "No specific warning indicator was identified by "
-            "these basic checks. Verify the employer independently."
+            "No specific warning indicator was found by these checks. "
+            "Verify the employer independently."
         )
 
     return reasons
 
 
 def predict_job(job):
+    if model is None or vectorizer is None:
+        raise RuntimeError(
+            "The model or vectorizer could not be loaded."
+        )
+
     job_text = combine_job_text(job)
 
     if not job_text.strip():
         return None, None, [
-            "Insufficient job information to make a prediction."
+            "Insufficient information to analyze this job."
         ]
 
     transformed_text = vectorizer.transform([job_text])
@@ -399,15 +380,12 @@ def get_job_result(prediction):
 # HEADER
 # ==================================================
 
-st.markdown(
-    """
-    <div class="main-title">
-        <h1>🛡️ AI-Based Fake Job Detection System</h1>
-        <p>Detect Fake Jobs. Protect Your Career.</p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown("""
+<div class="main-title">
+    <h1>🛡️ AI-Based Fake Job Detection System</h1>
+    <p>Detect Fake Jobs. Protect Your Career.</p>
+</div>
+""", unsafe_allow_html=True)
 
 
 # ==================================================
@@ -452,57 +430,45 @@ if page == "Dashboard":
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <h3>Total Jobs Checked</h3>
-                <h2>{st.session_state.total_checked}</h2>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        st.markdown(f"""
+        <div class="metric-card">
+            <h3>Total Jobs Checked</h3>
+            <h2>{st.session_state.total_checked}</h2>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col2:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <h3>Potential Fake Jobs</h3>
-                <h2>{st.session_state.fake_count}</h2>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        st.markdown(f"""
+        <div class="metric-card">
+            <h3>Potential Fake Jobs</h3>
+            <h2>{st.session_state.fake_count}</h2>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col3:
-        st.markdown(
-            f"""
-            <div class="metric-card">
-                <h3>Likely Genuine Jobs</h3>
-                <h2>{st.session_state.genuine_count}</h2>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        st.markdown(f"""
+        <div class="metric-card">
+            <h3>Likely Genuine Jobs</h3>
+            <h2>{st.session_state.genuine_count}</h2>
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown("---")
     st.subheader("🔍 How to Use the System")
 
-    st.markdown(
-        """
-        <div class="section-card">
-            <b>Step 1:</b> Select Check Individual Job to check one posting.
-            <br><br>
-            <b>Step 2:</b> Enter the available job details.
-            <br><br>
-            <b>Step 3:</b> View the model prediction and warning indicators.
-            <br><br>
-            <b>Step 4:</b> Select Analyze CSV Dataset to analyze multiple jobs.
-            <br><br>
-            <b>Step 5:</b> Download the analysis results as a CSV file.
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown("""
+    <div class="section-card">
+        <b>Step 1:</b> Select Check Individual Job to check one posting.
+        <br><br>
+        <b>Step 2:</b> Enter the available job details.
+        <br><br>
+        <b>Step 3:</b> View the prediction and possible warning indicators.
+        <br><br>
+        <b>Step 4:</b> Upload a CSV file to analyze multiple job postings.
+        <br><br>
+        <b>Step 5:</b> Download the analysis results.
+    </div>
+    """, unsafe_allow_html=True)
 
     st.info(
         "Dashboard counts are session-based and are not permanently stored."
@@ -510,7 +476,7 @@ if page == "Dashboard":
 
 
 # ==================================================
-# INDIVIDUAL JOB PREDICTION
+# INDIVIDUAL JOB CHECK
 # ==================================================
 
 elif page == "Check Individual Job":
@@ -518,7 +484,7 @@ elif page == "Check Individual Job":
     st.subheader("🔎 Check an Individual Job Posting")
 
     st.write(
-        "Enter job details to receive a prediction and possible warning indicators."
+        "Enter job details to receive a model prediction."
     )
 
     with st.form("individual_job_form"):
@@ -597,48 +563,46 @@ elif page == "Check Individual Job":
 
     if submit_job:
 
-        if model_error:
-            st.error(
-                "The model could not be loaded. "
-                "Check the model files in your repository."
+        if not title.strip() and not description.strip():
+            st.warning(
+                "Enter at least a job title or job description."
             )
 
-        elif not title.strip() and not description.strip():
-            st.warning(
-                "Please enter at least a job title or job description."
+        elif model_error:
+            st.error(
+                "The model files could not be loaded. "
+                "Check the repository filenames."
             )
 
         else:
-            job_data = pd.Series(
-                {
-                    "title": title,
-                    "location": location,
-                    "department": department,
-                    "company_profile": company_profile,
-                    "description": description,
-                    "requirements": requirements,
-                    "benefits": benefits,
-                    "salary_range": salary_range,
-                    "employment_type": employment_type,
-                    "required_experience": required_experience,
-                    "required_education": required_education,
-                    "industry": industry,
-                    "function": function,
-                    "has_company_logo": (
-                        "1" if has_company_logo == "Yes"
-                        else "0" if has_company_logo == "No"
-                        else ""
-                    ),
-                    "has_questions": (
-                        "1" if has_questions == "Yes"
-                        else "0" if has_questions == "No"
-                        else ""
-                    )
-                }
-            )
+            job_data = pd.Series({
+                "title": title,
+                "location": location,
+                "department": department,
+                "company_profile": company_profile,
+                "description": description,
+                "requirements": requirements,
+                "benefits": benefits,
+                "salary_range": salary_range,
+                "employment_type": employment_type,
+                "required_experience": required_experience,
+                "required_education": required_education,
+                "industry": industry,
+                "function": function,
+                "has_company_logo": (
+                    "1" if has_company_logo == "Yes"
+                    else "0" if has_company_logo == "No"
+                    else ""
+                ),
+                "has_questions": (
+                    "1" if has_questions == "Yes"
+                    else "0" if has_questions == "No"
+                    else ""
+                )
+            })
 
             try:
-                with st.spinner("Analyzing the job posting..."):
+                with st.spinner("Analyzing job posting..."):
                     prediction, confidence, reasons = predict_job(
                         job_data
                     )
@@ -660,29 +624,22 @@ elif page == "Check Individual Job":
                     st.subheader("📋 Prediction Result")
 
                     if prediction == 1:
-                        st.markdown(
-                            """
-                            <div class="fake-result">
-                                <h3>⚠️ Potential Fake Job</h3>
-                                The model predicts that this job posting
-                                may be fraudulent. Verify the employer
-                                and job details independently.
-                            </div>
-                            """,
-                            unsafe_allow_html=True
-                        )
+                        st.markdown("""
+                        <div class="fake-result">
+                            <h3>⚠️ Potential Fake Job</h3>
+                            The model predicts that this posting may be
+                            fraudulent. Verify the employer independently.
+                        </div>
+                        """, unsafe_allow_html=True)
+
                     else:
-                        st.markdown(
-                            """
-                            <div class="real-result">
-                                <h3>✅ Likely Genuine Job</h3>
-                                The model predicts that this posting is
-                                likely genuine. This does not guarantee
-                                that the job is safe.
-                            </div>
-                            """,
-                            unsafe_allow_html=True
-                        )
+                        st.markdown("""
+                        <div class="real-result">
+                            <h3>✅ Likely Genuine Job</h3>
+                            The model predicts that this posting is likely
+                            genuine. This is not a safety guarantee.
+                        </div>
+                        """, unsafe_allow_html=True)
 
                     if confidence is not None:
                         st.metric(
@@ -691,7 +648,7 @@ elif page == "Check Individual Job":
                         )
 
                         st.caption(
-                            "Model confidence is not a guarantee of correctness."
+                            "Confidence is not a guarantee of correctness."
                         )
 
                     st.subheader("🚩 Possible Warning Indicators")
@@ -699,21 +656,17 @@ elif page == "Check Individual Job":
                     for reason in reasons:
                         st.write(f"• {reason}")
 
-                    st.markdown(
-                        """
-                        <div class="warning-box">
-                            <b>Important:</b> Warning indicators are not
-                            proof of fraud. Verify job details through
-                            official company channels.
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                    st.markdown("""
+                    <div class="warning-box">
+                        Warning indicators are not proof of fraud.
+                        Verify job details through official company channels.
+                    </div>
+                    """, unsafe_allow_html=True)
 
             except Exception as error:
                 st.error(
-                    "Unable to analyze this job. "
-                    "Check the model and vectorizer compatibility."
+                    "Unable to analyze the job. Check the model files "
+                    "and model/vectorizer compatibility."
                 )
                 st.caption(f"Technical details: {error}")
 
@@ -730,16 +683,13 @@ elif page == "Analyze CSV Dataset":
         "Upload a CSV file containing job postings to analyze multiple jobs."
     )
 
-    st.markdown(
-        """
-        <div class="info-box">
-            <b>CSV Upload:</b> Select a CSV file containing job postings.
-            The dataset should include fields such as job title,
-            description, requirements, or company profile.
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown("""
+    <div class="info-box">
+        <b>CSV Upload:</b> Choose a CSV file containing job-posting
+        information such as title, description, requirements,
+        or company profile.
+    </div>
+    """, unsafe_allow_html=True)
 
     uploaded_file = st.file_uploader(
         "Upload a job postings CSV file",
@@ -755,7 +705,7 @@ elif page == "Analyze CSV Dataset":
             st.success("Dataset uploaded successfully!")
 
             st.write(
-                f"**Total Rows:** {data.shape[0]}  |  "
+                f"**Total Rows:** {data.shape[0]} | "
                 f"**Total Columns:** {data.shape[1]}"
             )
 
@@ -770,11 +720,64 @@ elif page == "Analyze CSV Dataset":
             st.subheader("⚙️ Analysis Settings")
 
             if data.empty:
-                st.warning("The uploaded CSV file contains no rows.")
+                st.warning(
+                    "The uploaded CSV file contains no rows."
+                )
 
             else:
                 max_jobs = st.number_input(
                     "Number of jobs to analyze",
                     min_value=1,
                     max_value=len(data),
-      
+                    value=min(100, len(data)),
+                    step=1
+                )
+
+                if st.button("🚀 Analyze Job Postings"):
+
+                    if model_error:
+                        st.error(
+                            "The model files could not be loaded. "
+                            "Check the filenames in your repository."
+                        )
+
+                    else:
+                        total_to_analyze = min(
+                            int(max_jobs),
+                            len(data)
+                        )
+
+                        results = []
+                        progress = st.progress(0)
+                        status = st.empty()
+
+                        try:
+                            for index in range(total_to_analyze):
+
+                                row = data.iloc[index]
+
+                                prediction, confidence, reasons = predict_job(
+                                    row
+                                )
+
+                                if prediction is None:
+                                    prediction_label = (
+                                        "Insufficient Information"
+                                    )
+                                else:
+                                    prediction_label = get_job_result(
+                                        prediction
+                                    )
+
+                                result_row = row.to_dict()
+
+                                result_row["Prediction"] = prediction_label
+
+                                result_row["Model_Confidence_Percent"] = (
+                                    round(confidence, 2)
+                                    if confidence is not None
+                                    else None
+                                )
+
+                                result_row["Warning_Reasons"] = " | ".join(
+                                 
