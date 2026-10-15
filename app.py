@@ -39,6 +39,19 @@ h2, h3 {
     border-radius: 12px;
     border: 1px solid #D5E4F5;
 }
+.stTextInput input,
+.stTextArea textarea {
+    background-color: white !important;
+    color: #123B70 !important;
+    border: 2px solid #B8CCE8 !important;
+    border-radius: 8px !important;
+}
+
+.stTextInput label,
+.stTextArea label {
+    color: #123B70 !important;
+    font-weight: bold !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
