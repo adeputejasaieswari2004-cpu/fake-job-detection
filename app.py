@@ -779,5 +779,17 @@ elif page == "Analyze CSV Dataset":
                                     else None
                                 )
 
-                                result_row["Warning_Reasons"] = " | ".join(
-                                 
+                                                                result_row["Warning_Reasons"] = (
+                                    " | ".join(reasons)
+                                )
+
+                                results.append(result_row)
+
+                                progress.progress(
+                                    (index + 1) / total_to_analyze
+                                )
+
+                                status.write(
+                                    f"Analyzed {index + 1} "
+                                    f"of {total_to_analyze} jobs..."
+                                )
