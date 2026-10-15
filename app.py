@@ -304,6 +304,9 @@ if uploaded_file is not None:
                 )
 
                 predictions = model.predict(vectors)
+                st.session_state.total_jobs += len(predictions)
+                st.session_state.fake_jobs += int((predictions == 1).sum())
+                st.session_state.genuine_jobs += int((predictions == 0).sum())
 
                 sample["Prediction"] = [
                     "Potentially Fake" if int(p) == 1
