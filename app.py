@@ -165,7 +165,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-        st.subheader("Why should you check this job?")
+st.subheader("Why should you check this job?")
 
         reasons = get_reasons(
             title, company_profile, description, requirements
