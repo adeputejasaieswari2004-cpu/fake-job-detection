@@ -769,9 +769,8 @@ elif page == "Analyze CSV Dataset":
                                         prediction
                                     )
 
-                                result_row = row.to_dict()
-
-                                result_row["Prediction"] = prediction_label
+result_row = row.to_dict()
+result_row["Prediction"] = prediction_label
 
                                 result_row["Model_Confidence_Percent"] = (
                                     round(confidence, 2)
