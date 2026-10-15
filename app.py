@@ -73,7 +73,29 @@ st.write(
     "and identify possible warning signs."
 )
 
+# Dashboard
+st.subheader("📊 Job Detection Dashboard")
 
+if "total_jobs" not in st.session_state:
+    st.session_state.total_jobs = 0
+
+if "fake_jobs" not in st.session_state:
+    st.session_state.fake_jobs = 0
+
+if "genuine_jobs" not in st.session_state:
+    st.session_state.genuine_jobs = 0
+
+fake_percentage = (
+    st.session_state.fake_jobs / st.session_state.total_jobs * 100
+    if st.session_state.total_jobs > 0 else 0
+)
+
+col1, col2, col3, col4 = st.columns(4)
+
+col1.metric("Total Jobs Analysed", st.session_state.total_jobs)
+col2.metric("Fake Jobs", st.session_state.fake_jobs)
+col3.metric("Genuine Jobs", st.session_state.genuine_jobs)
+col4.metric("Fake Job Rate", f"{fake_percentage:.1f}%")
 # Load trained ML model and TF-IDF vectorizer
 @st.cache_resource
 def load_models():
@@ -163,6 +185,12 @@ if st.button("Check Job Posting"):
 
         text_vector = vectorizer.transform([job_text])
         prediction = model.predict(text_vector)[0]
+        st.session_state.total_jobs += 1
+
+        if int(prediction) == 1:
+            st.session_state.fake_jobs += 1
+        else:
+            st.session_state.genuine_jobs += 1
 
         st.subheader("🔎 Prediction Result")
 
