@@ -7,8 +7,49 @@ st.set_page_config(
     page_icon="🔍",
     layout="wide"
 )
+st.markdown("""
 
-st.title("🔍 AI-Based Fake Job Detection System")
+<style>
+.stApp {
+    background-color: #F4F8FF;
+}
+h1 {
+    color: #123B70;
+    font-weight: 800;
+}
+h2, h3 {
+    color: #245A91;
+}
+.stButton > button {
+    background-color: #246BCE;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    padding: 10px 22px;
+    font-weight: bold;
+}
+.stButton > button:hover {
+    background-color: #174A91;
+    color: white;
+}
+[data-testid="stFileUploader"] {
+    background-color: white;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #D5E4F5;
+}
+</style>""", unsafe_allow_html=True)
+st.markdown("""
+<div style="background: linear-gradient(90deg, #123B70, #3979D8);
+            padding: 25px; border-radius: 15px; text-align: center;">
+    <h1 style="color: white; margin: 0;">
+        🛡️ AI-Based Fake Job Detection System
+    </h1>
+    <p style="color: white; font-size: 17px; margin-top: 10px;">
+        Detect Fake Jobs. Protect Your Career.
+    </p>
+</div>
+""", unsafe_allow_html=True)
 st.write(
     "Analyze job postings using Machine Learning "
     "and identify possible warning signs."
