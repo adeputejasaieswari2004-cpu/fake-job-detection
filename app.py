@@ -1,216 +1,108 @@
 import os
 import pickle
-import re
 
 import pandas as pd
 import streamlit as st
 
-
-# ==================================================
-# PAGE CONFIGURATION
-# ==================================================
-
+# ---------------- PAGE SETTINGS ----------------
 st.set_page_config(
     page_title="AI-Based Fake Job Detection System",
     page_icon="🛡️",
-    layout="wide"
+    layout="wide",
 )
 
+# ---------------- CSS DESIGN ----------------
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #f5f7fb;
+    }
 
-# ==================================================
-# CSS DESIGN
-# ==================================================
+    .main-title {
+        font-size: 34px;
+        font-weight: 800;
+        color: #172554;
+    }
 
-st.markdown("""
-<style>
-.stApp {
-    background-color: #F4F7FB;
-    color: #172B4D;
-}
+    .subtitle {
+        color: #475569;
+        font-size: 16px;
+    }
 
-.block-container {
-    padding-top: 1.5rem;
-}
+    .result-fake {
+        background: #fff1f2;
+        border-left: 6px solid #e11d48;
+        padding: 16px;
+        border-radius: 10px;
+        color: #881337;
+    }
 
-h1, h2, h3 {
-    color: #123C69 !important;
-}
+    .result-real {
+        background: #ecfdf5;
+        border-left: 6px solid #059669;
+        padding: 16px;
+        border-radius: 10px;
+        color: #064e3b;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-.main-title {
-    background: linear-gradient(90deg, #123C69, #2471A3);
-    padding: 24px;
-    border-radius: 16px;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.main-title h1,
-.main-title p {
-    color: white !important;
-}
-
-.metric-card {
-    background: white;
-    border: 1px solid #D6E4F0;
-    border-radius: 12px;
-    padding: 18px;
-    text-align: center;
-    margin-bottom: 12px;
-}
-
-.metric-card h3 {
-    font-size: 15px;
-}
-
-.metric-card h2 {
-    font-size: 28px;
-    margin: 0;
-}
-
-.section-card {
-    background: white;
-    border: 1px solid #D6E4F0;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 15px;
-}
-
-.fake-result {
-    background: #FDECEC;
-    border-left: 6px solid #D93025;
-    padding: 18px;
-    border-radius: 10px;
-}
-
-.real-result {
-    background: #E8F7EE;
-    border-left: 6px solid #18864B;
-    padding: 18px;
-    border-radius: 10px;
-}
-
-.info-box {
-    background: #EAF3FC;
-    border-left: 5px solid #2471A3;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-}
-
-.warning-box {
-    background: #FFF4DD;
-    border-left: 5px solid #D99A00;
-    padding: 15px;
-    border-radius: 8px;
-}
-
-/* CSV uploader */
-
-div[data-testid="stFileUploader"] {
-    background-color: #FFFFFF !important;
-    border: 2px solid #2471A3 !important;
-    border-radius: 12px !important;
-    padding: 20px !important;
-}
-
-div[data-testid="stFileUploader"] label,
-div[data-testid="stFileUploader"] label *,
-div[data-testid="stFileUploader"] section,
-div[data-testid="stFileUploader"] section *,
-div[data-testid="stFileUploader"] small,
-div[data-testid="stFileUploader"] span,
-div[data-testid="stFileUploader"] p {
-    color: #172B4D !important;
-    opacity: 1 !important;
-}
-
-div[data-testid="stFileUploader"] button {
-    background-color: #E8F2FC !important;
-    color: #123C69 !important;
-    border: 1px solid #2471A3 !important;
-    border-radius: 8px !important;
-}
-
-div[data-testid="stFileUploader"] button * {
-    color: #123C69 !important;
-}
-
-.stButton > button,
-.stDownloadButton > button {
-    background-color: #2471A3 !important;
-    color: white !important;
-    border-radius: 9px;
-    border: none;
-    padding: 10px 16px;
-    font-weight: bold;
-}
-
-.footer {
-    text-align: center;
-    color: #526579;
-    padding: 20px;
-    margin-top: 25px;
-    border-top: 1px solid #D6E4F0;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
-# ==================================================
-# LOAD TRAINED MODEL
-# ==================================================
-
-MODEL_PATH = "fake_job_model (1).pkl"
-VECTORIZER_PATH = "tfidf_vectorizer.pkl"
-
-
+# ---------------- LOAD MODEL FILES ----------------
 @st.cache_resource
-def load_model_files():
-    if not os.path.exists(MODEL_PATH):
-        return None, None, (
-            f"Model file not found: {MODEL_PATH}"
-        )
+def load_artifacts():
+    model_names = [
+        "fake_job_model.pkl",
+        "fake_job_model (1).pkl",
+        "model.pkl",
+    ]
 
-    if not os.path.exists(VECTORIZER_PATH):
-        return None, None, (
-            f"Vectorizer file not found: {VECTORIZER_PATH}"
-        )
+    vectorizer_names = [
+        "tfidf_vectorizer.pkl",
+        "vectorizer.pkl",
+        "tfidf.pkl",
+    ]
 
-    try:
-        with open(MODEL_PATH, "rb") as file:
-            loaded_model = pickle.load(file)
+    model = None
+    vectorizer = None
 
-        with open(VECTORIZER_PATH, "rb") as file:
-            loaded_vectorizer = pickle.load(file)
+    for filename in model_names:
+        if os.path.exists(filename):
+            with open(filename, "rb") as file:
+                model = pickle.load(file)
+            break
 
-        return loaded_model, loaded_vectorizer, None
+    for filename in vectorizer_names:
+        if os.path.exists(filename):
+            with open(filename, "rb") as file:
+                vectorizer = pickle.load(file)
+            break
 
-    except Exception as error:
-        return None, None, str(error)
-
-
-model, vectorizer, model_error = load_model_files()
-
-
-# ==================================================
-# SESSION COUNTERS
-# ==================================================
-
-if "total_checked" not in st.session_state:
-    st.session_state.total_checked = 0
-
-if "fake_count" not in st.session_state:
-    st.session_state.fake_count = 0
-
-if "genuine_count" not in st.session_state:
-    st.session_state.genuine_count = 0
+    return model, vectorizer
 
 
-# ==================================================
-# HELPER FUNCTIONS
-# ==================================================
+model, vectorizer = load_artifacts()
 
-def safe_text(value):
+# ---------------- JOB TEXT COLUMNS ----------------
+TEXT_COLUMNS = [
+    "title",
+    "company_profile",
+    "description",
+    "requirements",
+    "benefits",
+    "location",
+    "department",
+    "employment_type",
+    "required_experience",
+    "required_education",
+    "industry",
+    "function",
+]
+
+
+def clean_value(value):
     if value is None:
         return ""
 
@@ -220,575 +112,465 @@ def safe_text(value):
     except (TypeError, ValueError):
         pass
 
-    return str(value)
+    return str(value).strip()
 
 
 def combine_job_text(job):
-    fields = [
-        "title",
-        "company_profile",
-        "description",
-        "requirements",
-        "benefits",
-        "employment_type",
-        "required_experience",
-        "required_education",
-        "industry",
-        "function",
-        "location",
-        "department",
-        "salary_range"
-    ]
-
     parts = []
 
-    for field in fields:
-        if field in job.index:
-            value = safe_text(job[field])
+    for column in TEXT_COLUMNS:
+        if column in job:
+            value = clean_value(job[column])
 
-            if value.strip():
+            if value:
                 parts.append(value)
 
     return " ".join(parts)
 
 
-def detect_warning_reasons(job):
+# ---------------- WARNING REASONS ----------------
+def get_warning_reasons(job):
     reasons = []
+    text = combine_job_text(job).lower()
 
-    company_profile = safe_text(
-        job.get("company_profile", "")
-    ).strip()
+    if not clean_value(job.get("company_profile", "")):
+        reasons.append("Company profile is missing")
 
-    description = safe_text(
-        job.get("description", "")
-    ).strip()
+    if not clean_value(job.get("requirements", "")):
+        reasons.append("Job requirements are missing")
 
-    requirements = safe_text(
-        job.get("requirements", "")
-    ).strip()
-
-    benefits = safe_text(
-        job.get("benefits", "")
-    ).strip()
-
-    logo = safe_text(
-        job.get("has_company_logo", "")
-    ).strip().lower()
-
-    title = safe_text(
-        job.get("title", "")
-    ).lower()
-
-    if not company_profile:
-        reasons.append(
-            "Company profile information is missing."
-        )
-
-    if not description:
-        reasons.append(
-            "Job description is missing."
-        )
-
-    if not requirements:
-        reasons.append(
-            "Job requirements are not provided."
-        )
-
-    if not benefits:
-        reasons.append(
-            "Benefits information is missing."
-        )
-
-    if logo in ["0", "0.0", "false", "no"]:
-        reasons.append(
-            "The posting indicates that a company logo is absent."
-        )
-
-    combined_text = (
-        title + " " + description + " " + requirements
-    ).lower()
+    if not clean_value(job.get("benefits", "")):
+        reasons.append("Benefits information is missing")
 
     suspicious_phrases = [
-        "pay upfront",
         "registration fee",
-        "processing fee",
-        "pay to apply",
-        "earn money fast",
+        "training fee",
+        "pay upfront",
         "guaranteed income",
-        "send money",
+        "earn money fast",
+        "make money fast",
+        "quick money",
         "wire transfer",
-        "bank account details",
-        "instant earnings"
     ]
 
-    for phrase in suspicious_phrases:
-        if phrase in combined_text:
-            reasons.append(
-                f"Potential warning phrase detected: '{phrase}'."
-            )
+    matched_phrases = [
+        phrase
+        for phrase in suspicious_phrases
+        if phrase in text
+    ]
+
+    if matched_phrases:
+        reasons.append(
+            "Suspicious wording: " + ", ".join(matched_phrases[:3])
+        )
+
+    logo = clean_value(job.get("has_company_logo", "")).lower()
+
+    if logo in {"0", "false", "no"}:
+        reasons.append("Company logo is not provided")
 
     if not reasons:
         reasons.append(
-            "No specific warning indicator was found by these checks. "
-            "Verify the employer independently."
+            "No obvious warning signs found by the basic checks"
         )
 
     return reasons
 
 
+# ---------------- PREDICTION FUNCTION ----------------
 def predict_job(job):
     if model is None or vectorizer is None:
         raise RuntimeError(
-            "The model or vectorizer could not be loaded."
+            "Model files are missing. Add the model and vectorizer "
+            "files to the same repository as app.py."
         )
 
-    job_text = combine_job_text(job)
+    text = combine_job_text(job)
 
-    if not job_text.strip():
-        return None, None, [
-            "Insufficient information to analyze this job."
-        ]
+    if not text.strip():
+        raise ValueError("Please enter job details before checking.")
 
-    transformed_text = vectorizer.transform([job_text])
-
-    prediction = int(
-        model.predict(transformed_text)[0]
-    )
+    features = vectorizer.transform([text])
+    prediction = int(model.predict(features)[0])
 
     confidence = None
 
     if hasattr(model, "predict_proba"):
-        probabilities = model.predict_proba(
-            transformed_text
-        )[0]
-
+        probabilities = model.predict_proba(features)[0]
         confidence = float(max(probabilities)) * 100
 
-    reasons = detect_warning_reasons(job)
-
-    return prediction, confidence, reasons
-
-
-def get_job_result(prediction):
     if prediction == 1:
-        return "Potential Fake Job"
+        label = "Potential Fake Job"
+        reasons = get_warning_reasons(job)
+    else:
+        label = "Likely Genuine Job"
+        reasons = [
+            "The model did not classify this posting as fake.",
+            "Verify the employer before accepting the job.",
+        ]
 
-    return "Likely Genuine Job"
-
-
-# ==================================================
-# HEADER
-# ==================================================
-
-st.markdown("""
-<div class="main-title">
-    <h1>🛡️ AI-Based Fake Job Detection System</h1>
-    <p>Detect Fake Jobs. Protect Your Career.</p>
-</div>
-""", unsafe_allow_html=True)
+    return label, confidence, reasons
 
 
-# ==================================================
-# NAVIGATION
-# ==================================================
+# ---------------- HEADER ----------------
+st.markdown(
+    '<div class="main-title">'
+    '🛡️ AI-Based Fake Job Detection System'
+    '</div>',
+    unsafe_allow_html=True,
+)
 
-st.sidebar.title("🛡️ Navigation")
+st.markdown(
+    '<div class="subtitle">'
+    'Detect suspicious job postings and review possible warning signs.'
+    '</div>',
+    unsafe_allow_html=True,
+)
 
+st.write("")
+
+if model is None or vectorizer is None:
+    st.error(
+        "Model files not found. Keep app.py, your trained model file, "
+        "and tfidf_vectorizer.pkl in the repository's main folder."
+    )
+else:
+    st.success("AI model and TF-IDF vectorizer loaded successfully.")
+
+# ---------------- SIDEBAR NAVIGATION ----------------
 page = st.sidebar.radio(
-    "Select a Section",
+    "Navigation",
     [
         "Dashboard",
-        "Check Individual Job",
-        "Analyze CSV Dataset",
-        "About Project"
-    ]
+        "Check a Job",
+        "Bulk CSV Analysis",
+        "About Project",
+    ],
 )
 
-st.sidebar.markdown("---")
-
-st.sidebar.info(
-    "This system uses a machine-learning model trained "
-    "on labelled job-posting data."
-)
-
-if model_error:
-    st.sidebar.error(model_error)
-
-
-# ==================================================
+# ====================================================
 # DASHBOARD
-# ==================================================
-
+# ====================================================
 if page == "Dashboard":
-
     st.subheader("📊 Job Detection Dashboard")
 
-    st.write(
-        "View the job-checking activity performed during this session."
-    )
+    previous_results = st.session_state.get("analysis_data")
+
+    total_jobs = 0
+    fake_jobs = 0
+    genuine_jobs = 0
+
+    if isinstance(previous_results, pd.DataFrame):
+        total_jobs = len(previous_results)
+
+        if "Prediction" in previous_results.columns:
+            fake_jobs = int(
+                (
+                    previous_results["Prediction"]
+                    == "Potential Fake Job"
+                ).sum()
+            )
+
+            genuine_jobs = int(
+                (
+                    previous_results["Prediction"]
+                    == "Likely Genuine Job"
+                ).sum()
+            )
 
     col1, col2, col3 = st.columns(3)
 
-    with col1:
-        st.markdown(f"""
-        <div class="metric-card">
-            <h3>Total Jobs Checked</h3>
-            <h2>{st.session_state.total_checked}</h2>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col2:
-        st.markdown(f"""
-        <div class="metric-card">
-            <h3>Potential Fake Jobs</h3>
-            <h2>{st.session_state.fake_count}</h2>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col3:
-        st.markdown(f"""
-        <div class="metric-card">
-            <h3>Likely Genuine Jobs</h3>
-            <h2>{st.session_state.genuine_count}</h2>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("---")
-    st.subheader("🔍 How to Use the System")
-
-    st.markdown("""
-    <div class="section-card">
-        <b>Step 1:</b> Select Check Individual Job to check one posting.
-        <br><br>
-        <b>Step 2:</b> Enter the available job details.
-        <br><br>
-        <b>Step 3:</b> View the prediction and possible warning indicators.
-        <br><br>
-        <b>Step 4:</b> Upload a CSV file to analyze multiple job postings.
-        <br><br>
-        <b>Step 5:</b> Download the analysis results.
-    </div>
-    """, unsafe_allow_html=True)
+    col1.metric("Total Jobs Analysed", total_jobs)
+    col2.metric("Potential Fake Jobs", fake_jobs)
+    col3.metric("Likely Genuine Jobs", genuine_jobs)
 
     st.info(
-        "Dashboard counts are session-based and are not permanently stored."
+        "Go to Bulk CSV Analysis to upload and analyse multiple job postings. "
+        "Dashboard counts update after the analysis."
     )
 
+    if isinstance(previous_results, pd.DataFrame):
+        if not previous_results.empty:
+            st.markdown("### Latest Analysis")
+            st.dataframe(
+                previous_results.head(10),
+                use_container_width=True,
+            )
 
-# ==================================================
-# INDIVIDUAL JOB CHECK
-# ==================================================
+            if "Prediction" in previous_results.columns:
+                st.bar_chart(
+                    previous_results["Prediction"].value_counts()
+                )
 
-elif page == "Check Individual Job":
-
+# ====================================================
+# CHECK A JOB
+# ====================================================
+elif page == "Check a Job":
     st.subheader("🔎 Check an Individual Job Posting")
 
-    st.write(
-        "Enter job details to receive a model prediction."
-    )
-
-    with st.form("individual_job_form"):
-
+    with st.form("single_job_form"):
         title = st.text_input("Job Title")
-        location = st.text_input("Job Location")
-        department = st.text_input("Department")
+        company = st.text_input("Company Name")
+        location = st.text_input("Location")
 
-        company_profile = st.text_area(
-            "Company Profile",
-            height=100
-        )
+        company_profile = st.text_area("Company Profile")
+        description = st.text_area("Job Description")
+        requirements = st.text_area("Job Requirements")
+        benefits = st.text_area("Job Benefits")
 
-        description = st.text_area(
-            "Job Description",
-            height=150
-        )
+        submitted = st.form_submit_button("Check Job")
 
-        requirements = st.text_area(
-            "Job Requirements",
-            height=100
-        )
+    if submitted:
+        job = {
+            "title": title,
+            "company_profile": company_profile,
+            "description": description,
+            "requirements": requirements,
+            "benefits": benefits,
+            "location": location,
+        }
 
-        benefits = st.text_area(
-            "Benefits",
-            height=100
-        )
+        if company:
+            job["company_profile"] = (
+                company + " " + company_profile
+            ).strip()
 
-        salary_range = st.text_input("Salary Range")
+        try:
+            label, confidence, reasons = predict_job(job)
 
-        employment_type = st.selectbox(
-            "Employment Type",
-            [
-                "",
-                "Full-time",
-                "Part-time",
-                "Contract",
-                "Temporary",
-                "Other"
-            ]
-        )
+            if label == "Potential Fake Job":
+                st.markdown(
+                    '<div class="result-fake">'
+                    '<h3>⚠️ Potential Fake Job</h3>'
+                    'This posting may be suspicious. Verify it carefully.'
+                    '</div>',
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.markdown(
+                    '<div class="result-real">'
+                    '<h3>✅ Likely Genuine Job</h3>'
+                    'The model did not flag this posting as fake. '
+                    'This is not a guarantee.'
+                    '</div>',
+                    unsafe_allow_html=True,
+                )
 
-        required_experience = st.selectbox(
-            "Required Experience",
-            [
-                "",
-                "Internship",
-                "Entry level",
-                "Associate",
-                "Mid-Senior level",
-                "Director",
-                "Executive"
-            ]
-        )
+            if confidence is not None:
+                st.metric(
+                    "Model Confidence",
+                    f"{confidence:.2f}%",
+                )
 
-        required_education = st.text_input(
-            "Required Education"
-        )
+            st.markdown("### Warning Reasons / Review Notes")
 
-        industry = st.text_input("Industry")
-        function = st.text_input("Job Function")
+            for reason in reasons:
+                st.write(f"• {reason}")
 
-        has_company_logo = st.selectbox(
-            "Company Logo Available?",
-            ["Yes", "No", "Unknown"]
-        )
-
-        has_questions = st.selectbox(
-            "Screening Questions Available?",
-            ["Yes", "No", "Unknown"]
-        )
-
-        submit_job = st.form_submit_button(
-            "🔍 Analyze Job Posting"
-        )
-
-    if submit_job:
-
-        if not title.strip() and not description.strip():
             st.warning(
-                "Enter at least a job title or job description."
+                "This prediction may be incorrect. Verify the company "
+                "through official channels and never pay a fee to obtain a job."
             )
 
-        elif model_error:
-            st.error(
-                "The model files could not be loaded. "
-                "Check the repository filenames."
-            )
+        except Exception as error:
+            st.error(f"Could not analyse this job: {error}")
 
-        else:
-            job_data = pd.Series({
-                "title": title,
-                "location": location,
-                "department": department,
-                "company_profile": company_profile,
-                "description": description,
-                "requirements": requirements,
-                "benefits": benefits,
-                "salary_range": salary_range,
-                "employment_type": employment_type,
-                "required_experience": required_experience,
-                "required_education": required_education,
-                "industry": industry,
-                "function": function,
-                "has_company_logo": (
-                    "1" if has_company_logo == "Yes"
-                    else "0" if has_company_logo == "No"
-                    else ""
-                ),
-                "has_questions": (
-                    "1" if has_questions == "Yes"
-                    else "0" if has_questions == "No"
-                    else ""
-                )
-            })
-
-            try:
-                with st.spinner("Analyzing job posting..."):
-                    prediction, confidence, reasons = predict_job(
-                        job_data
-                    )
-
-                if prediction is None:
-                    st.warning(
-                        "Not enough information to analyze this job."
-                    )
-
-                else:
-                    st.session_state.total_checked += 1
-
-                    if prediction == 1:
-                        st.session_state.fake_count += 1
-                    else:
-                        st.session_state.genuine_count += 1
-
-                    st.markdown("---")
-                    st.subheader("📋 Prediction Result")
-
-                    if prediction == 1:
-                        st.markdown("""
-                        <div class="fake-result">
-                            <h3>⚠️ Potential Fake Job</h3>
-                            The model predicts that this posting may be
-                            fraudulent. Verify the employer independently.
-                        </div>
-                        """, unsafe_allow_html=True)
-
-                    else:
-                        st.markdown("""
-                        <div class="real-result">
-                            <h3>✅ Likely Genuine Job</h3>
-                            The model predicts that this posting is likely
-                            genuine. This is not a safety guarantee.
-                        </div>
-                        """, unsafe_allow_html=True)
-
-                    if confidence is not None:
-                        st.metric(
-                            "Model Confidence",
-                            f"{confidence:.2f}%"
-                        )
-
-                        st.caption(
-                            "Confidence is not a guarantee of correctness."
-                        )
-
-                    st.subheader("🚩 Possible Warning Indicators")
-
-                    for reason in reasons:
-                        st.write(f"• {reason}")
-
-                    st.markdown("""
-                    <div class="warning-box">
-                        Warning indicators are not proof of fraud.
-                        Verify job details through official company channels.
-                    </div>
-                    """, unsafe_allow_html=True)
-
-            except Exception as error:
-                st.error(
-                    "Unable to analyze the job. Check the model files "
-                    "and model/vectorizer compatibility."
-                )
-                st.caption(f"Technical details: {error}")
-
-
-# ==================================================
-# CSV DATASET ANALYSIS
-# ==================================================
-
-elif page == "Analyze CSV Dataset":
-
-    st.subheader("2. Analyze Job Postings from a CSV Dataset")
+# ====================================================
+# BULK CSV ANALYSIS
+# ====================================================
+elif page == "Bulk CSV Analysis":
+    st.subheader("📁 Bulk Job Posting Analysis")
 
     st.write(
-        "Upload a CSV file containing job postings to analyze multiple jobs."
+        "Upload a CSV dataset containing job postings. "
+        "Columns such as title, description, requirements, and "
+        "company_profile help the model analyse each job."
     )
-
-    st.markdown("""
-    <div class="info-box">
-        <b>CSV Upload:</b> Choose a CSV file containing job-posting
-        information such as title, description, requirements,
-        or company profile.
-    </div>
-    """, unsafe_allow_html=True)
 
     uploaded_file = st.file_uploader(
-        "Upload a job postings CSV file",
+        "Upload Job Postings CSV File",
         type=["csv"],
-        help="Choose a CSV file containing job postings."
     )
 
     if uploaded_file is not None:
-
         try:
             data = pd.read_csv(uploaded_file)
 
-            st.success("Dataset uploaded successfully!")
+            st.success("Dataset uploaded successfully.")
 
             st.write(
-                f"**Total Rows:** {data.shape[0]} | "
-                f"**Total Columns:** {data.shape[1]}"
+                f"Rows: {data.shape[0]} | Columns: {data.shape[1]}"
             )
 
-            st.subheader("👀 Dataset Preview")
+            st.markdown("### Dataset Preview")
 
             st.dataframe(
                 data.head(),
-                use_container_width=True
+                use_container_width=True,
             )
 
-            st.markdown("---")
-            st.subheader("⚙️ Analysis Settings")
-
             if data.empty:
-                st.warning(
-                    "The uploaded CSV file contains no rows."
-                )
+                st.warning("The uploaded CSV file has no rows.")
 
             else:
                 max_jobs = st.number_input(
-                    "Number of jobs to analyze",
+                    "Number of jobs to analyse",
                     min_value=1,
                     max_value=len(data),
                     value=min(100, len(data)),
-                    step=1
+                    step=1,
                 )
 
-                if st.button("🚀 Analyze Job Postings"):
-
-                    if model_error:
+                if st.button("Analyse Jobs"):
+                    if model is None or vectorizer is None:
                         st.error(
-                            "The model files could not be loaded. "
-                            "Check the filenames in your repository."
+                            "Model files are missing. Add your model "
+                            "and vectorizer files to GitHub."
                         )
 
                     else:
                         total_to_analyze = min(
                             int(max_jobs),
-                            len(data)
+                            len(data),
                         )
 
                         results = []
+
                         progress = st.progress(0)
                         status = st.empty()
 
-                        try:
-                            for index in range(total_to_analyze):
+                        for index, (_, row) in enumerate(
+                            data.head(total_to_analyze).iterrows()
+                        ):
+                            job = row.to_dict()
+                            result_row = row.to_dict()
 
-                                row = data.iloc[index]
-
-                                prediction, confidence, reasons = predict_job(
-                                    row
+                            try:
+                                label, confidence, reasons = predict_job(
+                                    job
                                 )
 
-                                if prediction is None:
-                                    prediction_label = (
-                                        "Insufficient Information"
+                                result_row["Prediction"] = label
+
+                                if confidence is not None:
+                                    result_row["Confidence_Percent"] = (
+                                        round(confidence, 2)
                                     )
                                 else:
-                                    prediction_label = get_job_result(
-                                        prediction
-                                    )
+                                    result_row["Confidence_Percent"] = "N/A"
 
-result_row = row.to_dict()
-result_row["Prediction"] = prediction_label
-
-                                result_row["Model_Confidence_Percent"] = (
-                                    round(confidence, 2)
-                                    if confidence is not None
-                                    else None
-                                )
-
-                                                                result_row["Warning_Reasons"] = (
+                                result_row["Warning_Reasons"] = (
                                     " | ".join(reasons)
                                 )
 
-                                results.append(result_row)
+                            except Exception as error:
+                                result_row["Prediction"] = "Analysis Error"
+                                result_row["Confidence_Percent"] = "N/A"
+                                result_row["Warning_Reasons"] = str(error)
 
-                                progress.progress(
-                                    (index + 1) / total_to_analyze
-                                )
+                            results.append(result_row)
 
-                                status.write(
-                                    f"Analyzed {index + 1} "
-                                    f"of {total_to_analyze} jobs..."
-                                )
+                            progress.progress(
+                                (index + 1) / total_to_analyze
+                            )
+
+                            status.write(
+                                f"Analysed {index + 1} "
+                                f"of {total_to_analyze} jobs..."
+                            )
+
+                        results_df = pd.DataFrame(results)
+
+                        st.session_state["analysis_data"] = results_df
+
+                        st.success("Analysis completed!")
+
+                        st.markdown("### Analysis Results")
+
+                        st.dataframe(
+                            results_df,
+                            use_container_width=True,
+                        )
+
+                        fake_count = int(
+                            (
+                                results_df["Prediction"]
+                                == "Potential Fake Job"
+                            ).sum()
+                        )
+
+                        genuine_count = int(
+                            (
+                                results_df["Prediction"]
+                                == "Likely Genuine Job"
+                            ).sum()
+                        )
+
+                        col1, col2, col3 = st.columns(3)
+
+                        col1.metric(
+                            "Jobs Analysed",
+                            len(results_df),
+                        )
+
+                        col2.metric(
+                            "Potential Fake Jobs",
+                            fake_count,
+                        )
+
+                        col3.metric(
+                            "Likely Genuine Jobs",
+                            genuine_count,
+                        )
+
+                        st.markdown("### Prediction Chart")
+
+                        st.bar_chart(
+                            results_df["Prediction"].value_counts()
+                        )
+
+                        csv_bytes = results_df.to_csv(
+                            index=False
+                        ).encode("utf-8")
+
+                        st.download_button(
+                            label="Download Analysis Results (CSV)",
+                            data=csv_bytes,
+                            file_name="fake_job_analysis_results.csv",
+                            mime="text/csv",
+                        )
+
+        except Exception as error:
+            st.error(
+                f"Could not read or analyse the CSV file: {error}"
+            )
+
+# ====================================================
+# ABOUT PROJECT
+# ====================================================
+elif page == "About Project":
+    st.subheader("ℹ️ About This Project")
+
+    st.write(
+        "The AI-Based Fake Job Detection System uses a trained "
+        "machine-learning model and a TF-IDF text vectorizer to "
+        "classify job postings as potentially fake or likely genuine."
+    )
+
+    st.markdown(
+        "**Dataset:** Real or Fake Job Posting Dataset from Kaggle."
+    )
+
+    st.markdown("### Main Features")
+
+    st.write("• Individual job posting prediction")
+    st.write("• Bulk CSV job analysis")
+    st.write("• Possible warning reasons")
+    st.write("• Model confidence when available")
+    st.write("• Dashboard and prediction chart")
+    st.write("• Downloadable CSV results")
+
+    st.warning(
+        "The model provides an estimate, not proof that a job is fake "
+        "or genuine. Always verify the employer independently."
+    )
