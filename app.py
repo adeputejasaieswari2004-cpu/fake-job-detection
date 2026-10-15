@@ -18,10 +18,6 @@ if "fake_jobs" not in st.session_state:
 if "genuine_jobs" not in st.session_state:
     st.session_state.genuine_jobs = 0
 
-# Create a dashboard placeholder at the top.
-# It will be filled after predictions are processed.
-dashboard_slot = st.empty()
-
 # Website styling
 st.markdown("""
 <style>
@@ -132,6 +128,10 @@ st.write(
     "Analyze job postings using Machine Learning "
     "and identify possible warning signs."
 )
+
+# Dashboard placeholder moved here:
+# It now appears below the website heading and description.
+dashboard_slot = st.empty()
 
 
 # Load trained ML model and TF-IDF vectorizer
@@ -400,7 +400,7 @@ if uploaded_file is not None:
         st.error(f"Could not process the dataset: {e}")
 
 
-# Display updated dashboard at its original position
+# Display updated dashboard at its original placeholder position
 with dashboard_slot.container():
 
     st.subheader("📊 Job Detection Dashboard")
