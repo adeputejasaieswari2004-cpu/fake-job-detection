@@ -13,6 +13,16 @@ st.markdown("""
 <style>
 .stApp {
     background-color: #F4F8FF;
+    color: #1F2937;
+}
+
+.stApp p,
+.stApp label,
+.stApp h1,
+.stApp h2,
+.stApp h3,
+.stMarkdown {
+    color: #1F2937 !important;
 }
 h1 {
     color: #123B70;
