@@ -61,6 +61,26 @@ h2, h3 {
 .stTextArea label {
     color: #123B70 !important;
     font-weight: bold !important;
+}.stFileUploader,
+.stFileUploader label,
+.stFileUploader section,
+.stFileUploader small,
+.stFileUploader span {
+    color: #123B70 !important;
+}
+
+.stFileUploader section {
+    background-color: #FFFFFF !important;
+    border: 2px dashed #2563EB !important;
+    border-radius: 12px !important;
+    padding: 15px !important;
+}
+
+.stFileUploader button {
+    background-color: #2563EB !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
+    font-weight: bold !important;
 }
 </style>
 """, unsafe_allow_html=True)
