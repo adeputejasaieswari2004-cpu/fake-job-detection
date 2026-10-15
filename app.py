@@ -7,8 +7,9 @@ st.set_page_config(
     page_icon="🔍",
     layout="wide"
 )
-st.markdown("""
 
+# Website styling
+st.markdown("""
 <style>
 .stApp {
     background-color: #F4F8FF;
@@ -38,7 +39,10 @@ h2, h3 {
     border-radius: 12px;
     border: 1px solid #D5E4F5;
 }
-</style>""", unsafe_allow_html=True)
+</style>
+""", unsafe_allow_html=True)
+
+# Website header
 st.markdown("""
 <div style="background: linear-gradient(90deg, #123B70, #3979D8);
             padding: 25px; border-radius: 15px; text-align: center;">
@@ -50,16 +54,20 @@ st.markdown("""
     </p>
 </div>
 """, unsafe_allow_html=True)
+
 st.write(
     "Analyze job postings using Machine Learning "
     "and identify possible warning signs."
 )
 
+
+# Load trained ML model and TF-IDF vectorizer
 @st.cache_resource
 def load_models():
     model = joblib.load("fake_job_model (1).pkl")
     vectorizer = joblib.load("tfidf_vectorizer.pkl")
     return model, vectorizer
+
 
 try:
     model, vectorizer = load_models()
@@ -69,6 +77,7 @@ except Exception as e:
     st.stop()
 
 
+# Identify possible warning signs
 def get_reasons(title, company, description, requirements):
     reasons = []
 
@@ -116,6 +125,7 @@ def get_reasons(title, company, description, requirements):
     return reasons
 
 
+# Individual job posting analysis
 st.header("1. Check an Individual Job Posting")
 
 title = st.text_input("Job Title")
@@ -124,8 +134,12 @@ description = st.text_area("Job Description")
 requirements = st.text_area("Job Requirements")
 
 if st.button("Check Job Posting"):
+
     if not title.strip() or not description.strip():
-        st.warning("Please enter the Job Title and Job Description.")
+        st.warning(
+            "Please enter the Job Title and Job Description."
+        )
+
     else:
         job_text = (
             title + " " +
@@ -139,46 +153,59 @@ if st.button("Check Job Posting"):
 
         st.subheader("🔎 Prediction Result")
 
-if int(prediction) == 1:
-    st.markdown("""
-    <div style="background-color:#FFF0F0; padding:22px;
-                border-left:6px solid #DC2626; border-radius:12px;">
-        <h2 style="color:#B91C1C; margin:0;">
-            ⚠️ Potentially Fake Job Posting
-        </h2>
-        <p style="color:#7F1D1D; margin-top:10px;">
-            Warning signs detected. Verify the employer before proceeding.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-else:
-    st.markdown("""
-    <div style="background-color:#ECFDF5; padding:22px;
-                border-left:6px solid #16A34A; border-radius:12px;">
-        <h2 style="color:#166534; margin:0;">
-            ✅ Likely Genuine Job Posting
-        </h2>
-        <p style="color:#166534; margin-top:10px;">
-            The model classified this posting as likely genuine.
-            Always verify the employer independently.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+        # Attractive result cards
+        if int(prediction) == 1:
+            st.markdown("""
+            <div style="background-color:#FFF0F0; padding:22px;
+                        border-left:6px solid #DC2626;
+                        border-radius:12px;">
+                <h2 style="color:#B91C1C; margin:0;">
+                    ⚠️ Potentially Fake Job Posting
+                </h2>
+                <p style="color:#7F1D1D; margin-top:10px;">
+                    Warning signs detected. Verify the employer
+                    before proceeding.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
 
-st.subheader("Why should you check this job?")
+        else:
+            st.markdown("""
+            <div style="background-color:#ECFDF5; padding:22px;
+                        border-left:6px solid #16A34A;
+                        border-radius:12px;">
+                <h2 style="color:#166534; margin:0;">
+                    ✅ Likely Genuine Job Posting
+                </h2>
+                <p style="color:#166534; margin-top:10px;">
+                    The model classified this posting as likely
+                    genuine. Always verify the employer independently.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        # Explain the result
+        st.subheader("Why should you check this job?")
 
         reasons = get_reasons(
-            title, company_profile, description, requirements
+            title,
+            company_profile,
+            description,
+            requirements
         )
 
         for reason in reasons:
             st.write("⚠️", reason)
 
+        # Model confidence
         if hasattr(model, "predict_proba"):
             probabilities = model.predict_proba(text_vector)[0]
             confidence = max(probabilities) * 100
 
-            st.metric("Model Prediction Confidence", f"{confidence:.2f}%")
+            st.metric(
+                "Model Prediction Confidence",
+                f"{confidence:.2f}%"
+            )
 
         st.info(
             "These are preliminary warning signs, not proof of fraud. "
@@ -186,6 +213,7 @@ st.subheader("Why should you check this job?")
         )
 
 
+# CSV dataset analysis
 st.divider()
 
 st.header("2. Analyze Job Postings from a CSV Dataset")
@@ -196,6 +224,7 @@ uploaded_file = st.file_uploader(
 )
 
 if uploaded_file is not None:
+
     try:
         data = pd.read_csv(uploaded_file)
 
@@ -214,6 +243,7 @@ if uploaded_file is not None:
         if all(col in data.columns for col in required_columns):
 
             if st.button("Analyze First 20 Jobs"):
+
                 sample = data.head(20).copy()
 
                 for col in required_columns:
@@ -252,7 +282,7 @@ if uploaded_file is not None:
                     for _, row in sample.iterrows()
                 ]
 
-                st.subheader("Prediction Results")
+                st.subheader("📋 Prediction Results")
 
                 st.dataframe(
                     sample[
@@ -261,9 +291,10 @@ if uploaded_file is not None:
                     use_container_width=True
                 )
 
-                st.subheader("Prediction Summary")
+                st.subheader("📊 Prediction Summary")
 
                 counts = sample["Prediction"].value_counts()
+
                 st.bar_chart(counts)
 
         else:
